@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import movie.com.example.movie.dto.MovieListReq;
 import movie.com.example.movie.dto.MovieListRes;
 import movie.com.example.movie.service.MovieService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,17 @@ public class MovieController {
         List<MovieListRes> movieList = movieService.getAllMovie();
         return ResponseEntity.status(HttpStatus.OK).body(movieList);
     }
+
+    @GetMapping("id/{movieId}")
+    public ResponseEntity<List<MovieListRes>> getMovieById(@PathVariable ObjectId movieId){
+        List<MovieListRes> movie = movieService.getMovieById(movieId);
+        return ResponseEntity.status(HttpStatus.OK).body(movie);
+    }
+
+    @PutMapping("id/{movieId}")
+    public ResponseEntity<String> updateMovieById(@PathVariable ObjectId movieId,@RequestBody MovieListReq movieRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(movieService.updateMovieById(movieId,movieRequest));
+    }
+
 
 }
