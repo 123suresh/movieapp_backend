@@ -84,6 +84,15 @@ public class MovieServiceImpl implements MovieService{
           return "Movie "+updateMovie.getTitle()+" updated successfully";
     }
 
+    public String delMovieById(ObjectId movieId){
+          boolean exist = movieRepository.existsById(movieId);
+          if(!exist){
+              return "Movie does not exist with given id";
+          }
+          movieRepository.deleteById(movieId);
+          return "Movie deleted successfully";
+    }
+
 }
 
 

@@ -43,5 +43,10 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.OK).body(movieService.updateMovieById(movieId,movieRequest));
     }
 
+    @DeleteMapping("{movieId}")
+    public ResponseEntity<String> delMovieById(@PathVariable ObjectId movieId){
+        return ResponseEntity.status(HttpStatus.OK).body(movieService.delMovieById(movieId));
+    }
+
 
 }
