@@ -43,5 +43,15 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.OK).body(movieService.updateMovieById(movieId,movieRequest));
     }
 
+    @DeleteMapping("{movieId}/{userName}")
+    public ResponseEntity<String> delMovieById(@PathVariable ObjectId movieId, @PathVariable String userName){
+        return ResponseEntity.status(HttpStatus.OK).body(movieService.delMovieById(movieId, userName));
+    }
+
+    //watch list according to user
+    @PutMapping("watchList/{movieId}/{userName}")
+    public ResponseEntity<?> addToWatchList(@PathVariable ObjectId movieId, @PathVariable String userName){
+        return ResponseEntity.status(HttpStatus.OK).body(movieService.addToWatchList(movieId,userName));
+    }
 
 }

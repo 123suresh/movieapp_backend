@@ -11,4 +11,6 @@ public interface MovieService {
     public List<MovieListRes> getAllMovie();
     public List<MovieListRes> getMovieById(ObjectId movieId);
     public String updateMovieById (ObjectId movieId, MovieListReq MovieListReq);
+    public String delMovieById(ObjectId movieId,String userName);
+    public String addToWatchList(ObjectId movieId, String userName);
 }
