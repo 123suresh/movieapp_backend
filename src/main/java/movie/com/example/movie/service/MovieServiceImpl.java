@@ -2,9 +2,11 @@ package movie.com.example.movie.service;
 
 import lombok.extern.slf4j.Slf4j;
 import movie.com.example.movie.dto.MovieListRes;
+import movie.com.example.movie.entity.User;
 import movie.com.example.movie.repository.MovieRepository;
 import movie.com.example.movie.dto.MovieListReq;
 import movie.com.example.movie.entity.MovieList;
+import movie.com.example.movie.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ import java.util.Optional;
 public class MovieServiceImpl implements MovieService{
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private UserRepository userRepository;
+
       public void saveMoviesList(List<MovieListReq> movieListReq) {
           List<MovieList> savedMovieList= movieRepository.saveAll(movieListReq.stream().map(movie->MovieList.builder()
                           .title(movie.getTitle())
@@ -84,14 +89,59 @@ public class MovieServiceImpl implements MovieService{
           return "Movie "+updateMovie.getTitle()+" updated successfully";
     }
 
-    public String delMovieById(ObjectId movieId){
+    public String delMovieById(ObjectId movieId,String userName){
+        Optional<User> optionalUser = userRepository.findByUserName(userName);
+          if(optionalUser.isEmpty()){
+              return "Cannot delete this user is not allow to delete this movie";
+          }
           boolean exist = movieRepository.existsById(movieId);
           if(!exist){
               return "Movie does not exist with given id";
           }
+          //here we are deleting movie both from user and movie list because if its deleted from
+          // movie list it should also be deleted from user that has link by BDRef.
+          User user = optionalUser.get();
+          user.getMovieList().removeIf(x->x.getId().equals(movieId));
+          userRepository.save(user);
           movieRepository.deleteById(movieId);
           return "Movie deleted successfully";
     }
+
+    //add to watch list
+//    public String addToWatchList(ObjectId movieId, String userName){
+//        Optional<User> user  = userRepository.findByUserName(userName);
+//        Optional<MovieList> movie = movieRepository.findById(movieId);
+//        if(user.isEmpty() || movie.isEmpty()){
+//            return "User name or movie id not found";
+//        }
+//        user.getMovieList().add(movie);
+//        userRepository.save(user);
+//        return "Successfully added to watchlist";
+//    }
+
+    // Add to watch list
+    public String addToWatchList(ObjectId movieId, String userName) {
+        Optional<User> optionalUser = userRepository.findByUserName(userName);
+        Optional<MovieList> optionalMovie = movieRepository.findById(movieId);
+
+        // Check if user or movie is not present
+        if (optionalUser.isEmpty() || optionalMovie.isEmpty()) {
+            return "User name or movie id not found";
+        }
+
+        // Get the actual User and Movie objects
+        User user = optionalUser.get();
+        MovieList movie = optionalMovie.get();
+
+        // Add the movie to the user's movie list
+        user.getMovieList().add(movie);
+
+        // Save the updated user object
+        userRepository.save(user);
+
+        return "Successfully added to watchlist";
+    }
+
 
 }
 
